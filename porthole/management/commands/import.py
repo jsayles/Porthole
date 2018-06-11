@@ -20,3 +20,4 @@ class Command(BaseCommand):
             importer.import_data()
         except Exception as e:
             print(str(e))
+            raise e

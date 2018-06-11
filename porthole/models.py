@@ -15,9 +15,9 @@ class Location(models.Model):
 
 
 class Switch(models.Model):
-    label = models.CharField(max_length=64)
-    make = models.CharField(max_length=64)
-    model = models.CharField(max_length=64)
+    label = models.CharField(max_length=64, unique=True)
+    make = models.CharField(max_length=64, null=True, blank=True)
+    model = models.CharField(max_length=64, null=True, blank=True)
     port_count = models.SmallIntegerField(null=True, blank=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
@@ -31,8 +31,8 @@ class Switch(models.Model):
 class VLAN(models.Model):
     tag = models.CharField(max_length=4, unique=True)
     name = models.CharField(max_length=16)
-    description = models.CharField(max_length=64)
-    ip_range = models.CharField(max_length=32)
+    description = models.CharField(max_length=64, null=True, blank=True)
+    ip_range = models.CharField(max_length=32, null=True, blank=True)
 
     def __str__(self):
         return "%s: %s" % (self.tag, self.name)
