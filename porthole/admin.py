@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import Location, EthernetPort, Switch
+from porthole.models import Location, Port, Switch, VLAN
 
 admin.site.register(Location)
 admin.site.register(Switch)
-admin.site.register(EthernetPort)
+admin.site.register(VLAN)
+admin.site.register(Port)

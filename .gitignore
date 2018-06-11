@@ -16,4 +16,5 @@ databases
 .vagrant/
 __pycache__/
 docs/_build/*
+data/*
 db.sqlite3
