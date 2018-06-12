@@ -46,6 +46,7 @@ class Importer(object):
         self.import_locations()
         self.import_switches()
         self.import_vlans()
+        self.import_ports()
 
     def import_locations(self):
         sheet = self.workbook[LOCATIONS]
@@ -88,3 +89,40 @@ class Importer(object):
             vlan.description = row['description']
             vlan.ip_range = row['ip_range']
             vlan.save()
+
+    def import_ports(self):
+        sheet = self.workbook[PORTS]
+        for row in sheet_to_dict(sheet):
+            # Find the location
+            location = Location.objects.filter(number=row['location']).first()
+            if not location:
+                raise Exception("Location '%s' not found!" % row['location'])
+
+            # Find the VLAN
+            vlan = VLAN.objects.filter(tag=row['vlan']).first()
+            if not vlan:
+                raise Exception("VLAN '%s' not found!" % row['vlan'])
+
+            # Find the switch
+            switch = Switch.objects.filter(label=row['switch']).first()
+
+            # We may have 1 or 2 labels on a single line
+            # NOTE:  This won't work if there is no space in the label name
+            port_labels = []
+            if row['port'].startswith("AB"):
+                port_prefix, port_number = row['port'].split(" ")
+                port_labels.append("A " + port_number)
+                port_labels.append("B " + port_number)
+            else:
+                port_labels.append(row['port'])
+
+            # Create or update the ports
+            for label in port_labels:
+                port = Port.objects.filter(label=label).first()
+                if not port:
+                    port = Port(label=label)
+                port.location = location
+                port.vlan = vlan
+                port.switch = switch
+                port.switch_port = row['switch port']
+                port.save()

@@ -44,7 +44,7 @@ class VLAN(models.Model):
 class Port(models.Model):
     label = models.CharField(max_length=4)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    switch = models.ForeignKey(Switch, on_delete=models.CASCADE)
+    switch = models.ForeignKey(Switch, null=True, blank=True, on_delete=models.CASCADE)
     switch_port = models.SmallIntegerField(null=True, blank=True)
     vlan = models.ForeignKey(VLAN, on_delete=models.CASCADE)
 
