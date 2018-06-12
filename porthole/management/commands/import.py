@@ -10,7 +10,7 @@ class Command(BaseCommand):
     requires_system_checks = True
 
     def add_arguments(self, parser):
-        parser.add_argument('excel_file', nargs='+', type=str)
+        parser.add_argument('excel_file', type=str)
         parser.add_argument(
             '--delete',
             action='store_true',
@@ -18,11 +18,8 @@ class Command(BaseCommand):
             help='Delete existing data first?',
         )
 
-
     def handle(self, *args, **options):
-        excel_file = options['excel_file'][0]
-
-
+        excel_file = options['excel_file']
         try:
             print("Importing '%s'" % excel_file)
             importer = Importer(excel_file)
@@ -32,4 +29,4 @@ class Command(BaseCommand):
             importer.import_data()
         except Exception as e:
             print(str(e))
-            raise e
+            # raise e

@@ -42,6 +42,16 @@ class Importer(object):
             if not sheet in self.workbook.sheetnames:
                 raise Exception("'%s' Sheet Not Found!" % sheet)
 
+        # Keep some stats
+        self.locations_added = 0
+        self.locations_updated = 0
+        self.switches_added = 0
+        self.switches_updated = 0
+        self.vlans_added = 0
+        self.vlans_updated = 0
+        self.ports_added = 0
+        self.ports_updated = 0
+
     def import_data(self):
         self.import_locations()
         self.import_switches()
@@ -56,11 +66,14 @@ class Importer(object):
             location = Location.objects.filter(number=number).first()
             if not location:
                 # Create a new location
+                self.locations_added = self.locations_added + 1
                 location = Location(number=number, name=row['name'], floor=int(number[0]))
             else:
                 # Update the name on an existing location
+                self.locations_updated = self.locations_updated + 1
                 location.name = row['name']
             location.save()
+        print("Locations Added: %d, Updated: %d" % (self.locations_added, self.locations_updated))
 
     def delete_data(self):
         Location.objects.all().delete()
@@ -75,14 +88,18 @@ class Importer(object):
             label = row['label']
             switch = Switch.objects.filter(label=label).first()
             if not switch:
+                self.switches_added = self.switches_added + 1
                 location = Location.objects.filter(number=row['location']).first()
                 if not location:
                     raise Exception("Location '%s' not found!" % row['location'])
                 switch = Switch(label=label, location=location)
+            else:
+                self.switches_updated = self.switches_updated + 1
             switch.make = row['make']
             switch.model = row['model']
             switch.port_count = row['port_count']
             switch.save()
+        print("Switches Added: %d, Updated: %d" % (self.switches_added, self.switches_updated))
 
     def import_vlans(self):
         sheet = self.workbook[VLANS]
@@ -90,11 +107,15 @@ class Importer(object):
             tag = row['tag']
             vlan = VLAN.objects.filter(tag=tag).first()
             if not vlan:
+                self.vlans_added = self.vlans_added + 1
                 vlan = VLAN(tag=tag)
+            else:
+                self.vlans_updated = self.vlans_updated + 1
             vlan.name = row['name']
             vlan.description = row['description']
             vlan.ip_range = row['ip_range']
             vlan.save()
+        print("VLANs Added: %d, Updated: %d" % (self.vlans_added, self.vlans_updated))
 
     def import_ports(self):
         sheet = self.workbook[PORTS]
@@ -131,13 +152,17 @@ class Importer(object):
             for label in port_labels:
                 port = Port.objects.filter(label=label).first()
                 if not port:
+                    self.ports_added = self.ports_added + 1
                     port = Port(label=label)
+                else:
+                    self.ports_updated = self.ports_updated + 1
                 port.location = location
                 port.closet = closet
                 port.vlan = vlan
                 port.switch = switch
                 port.switch_port = row['switch port']
                 port.save()
+        print("Ports Added: %d, Updated: %d" % (self.ports_added, self.ports_updated))
 
 
 ######################################################################
