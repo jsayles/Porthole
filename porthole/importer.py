@@ -1,4 +1,4 @@
-from openpyxl import load_workbook
+from openpyxl import Workbook, load_workbook
 
 from django.conf import settings
 from django.utils.timezone import localtime, now
@@ -62,6 +62,12 @@ class Importer(object):
                 location.name = row['name']
             location.save()
 
+    def delete_data(self):
+        Location.objects.all().delete()
+        Switch.objects.all().delete()
+        VLAN.objects.all().delete()
+        Port.objects.all().delete()
+
     def import_switches(self):
         sheet = self.workbook[SWITCHES]
         switches = sheet_to_dict(sheet)
@@ -98,6 +104,11 @@ class Importer(object):
             if not location:
                 raise Exception("Location '%s' not found!" % row['location'])
 
+            # Find the location
+            closet = Location.objects.filter(number=row['closet']).first()
+            if not closet:
+                raise Exception("Closet location '%s' not found!" % row['closet'])
+
             # Find the VLAN
             vlan = VLAN.objects.filter(tag=row['vlan']).first()
             if not vlan:
@@ -109,12 +120,12 @@ class Importer(object):
             # We may have 1 or 2 labels on a single line
             # NOTE:  This won't work if there is no space in the label name
             port_labels = []
-            if row['port'].startswith("AB"):
-                port_prefix, port_number = row['port'].split(" ")
+            if row['label'].startswith("AB"):
+                port_prefix, port_number = row['label'].split(" ")
                 port_labels.append("A " + port_number)
                 port_labels.append("B " + port_number)
             else:
-                port_labels.append(row['port'])
+                port_labels.append(row['label'])
 
             # Create or update the ports
             for label in port_labels:
@@ -122,7 +133,47 @@ class Importer(object):
                 if not port:
                     port = Port(label=label)
                 port.location = location
+                port.closet = closet
                 port.vlan = vlan
                 port.switch = switch
                 port.switch_port = row['switch port']
                 port.save()
+
+
+######################################################################
+# Data Exporter
+######################################################################
+
+
+class Exporter(object):
+
+    def __init__(self, file_name=None):
+        if file_name:
+            self.file_name = file_name
+        else:
+            timestamp = str(localtime(now()))[:16]
+            timestamp = timestamp.replace('-', '').replace(':', '').replace(' ', '_')
+            self.file_name = "data/export-%s.xlsx" % timestamp
+
+        # Create our initial workbook, sheets, and header rows
+        self.workbook = Workbook()
+        self.locations = self.workbook.active
+        self.locations.title = LOCATIONS
+        self.locations.append(['number', 'name'])
+        self.switches = self.workbook.create_sheet(title=SWITCHES)
+        self.switches.append(['label', 'location', 'make', 'model', 'port_count'])
+        self.vlans = self.workbook.create_sheet(title=VLANS)
+        self.vlans.append(['tag', 'name', 'description', 'ip_range'])
+        self.ports = self.workbook.create_sheet(title=PORTS)
+        self.ports.append(['label', 'location', 'description', 'vlan', 'closet', 'switch', 'switch_port'])
+
+    def export_data(self):
+        for l in Location.objects.all():
+            self.locations.append([l.number, l.name])
+        for s in Switch.objects.all():
+            self.switches.append([s.label, s.location.number, s.make, s.model, s.port_count])
+        for v in VLAN.objects.all():
+            self.vlans.append([v.tag, v.name, v.description, v.ip_range])
+        for p in Port.objects.all():
+            self.ports.append([p.label, p.location.number, p.location.name, p.vlan.tag, p.closet.number, p.switch, p.switch_port])
+        self.workbook.save(filename = self.file_name)
