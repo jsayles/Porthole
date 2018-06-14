@@ -50,4 +50,7 @@ class Port(models.Model):
     vlan = models.ForeignKey(VLAN, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s: %s" % (self.closet.number, self.label)
+        return "%s %s" % (self.closet.number, self.label)
+
+    class Meta:
+        ordering = ['closet__number', 'label']

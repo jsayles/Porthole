@@ -8,7 +8,7 @@ admin.site.register(VLAN)
 
 class PortAdmin(admin.ModelAdmin):
     def port(self):
-        return "%s: %s" % (self.closet.number, self.label)
+        return "%s %s" % (self.closet.number, self.label)
 
     model = Port
     list_display = (port, "location", "switch", "switch_port")

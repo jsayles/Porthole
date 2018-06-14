@@ -150,12 +150,13 @@ class Importer(object):
 
             # Create or update the ports
             for label in port_labels:
-                port = Port.objects.filter(label=label).first()
+                port = Port.objects.filter(label=label, closet=closet).first()
                 if not port:
                     self.ports_added = self.ports_added + 1
                     port = Port(label=label)
                 else:
                     self.ports_updated = self.ports_updated + 1
+                    print(port)
                 port.location = location
                 port.closet = closet
                 port.vlan = vlan
@@ -190,7 +191,7 @@ class Exporter(object):
         self.vlans = self.workbook.create_sheet(title=VLANS)
         self.vlans.append(['tag', 'name', 'description', 'ip_range'])
         self.ports = self.workbook.create_sheet(title=PORTS)
-        self.ports.append(['label', 'location', 'description', 'vlan', 'closet', 'switch', 'switch_port'])
+        self.ports.append(['label', 'location', 'description', 'vlan', 'closet', 'switch', 'switch port'])
 
     def export_data(self):
         for l in Location.objects.all():
