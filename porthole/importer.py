@@ -120,6 +120,10 @@ class Importer(object):
     def import_ports(self):
         sheet = self.workbook[PORTS]
         for row in sheet_to_dict(sheet):
+            # Skip blank lines
+            if row['location'] == None:
+                continue
+
             # Find the location
             location = Location.objects.filter(number=row['location']).first()
             if not location:
@@ -201,5 +205,5 @@ class Exporter(object):
         for v in VLAN.objects.all():
             self.vlans.append([v.tag, v.name, v.description, v.ip_range])
         for p in Port.objects.all():
-            self.ports.append([p.label, p.location.number, p.location.name, p.vlan.tag, p.closet.number, p.switch, p.switch_port])
+            self.ports.append([p.label, p.location.number, p.location.name, p.vlan.tag, p.closet.number, str(p.switch), p.switch_port])
         self.workbook.save(filename = self.file_name)
