@@ -3,3 +3,9 @@ pytz==2018.4
 et-xmlfile==1.0.1
 jdcal==1.4
 openpyxl==2.5.4
+
+# For Brocade
+paramiko==2.4.1
+cryptography==2.2.2
+
+pip-review
