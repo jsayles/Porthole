@@ -5,10 +5,6 @@ from time import sleep
 from paramiko import SSHClient, AutoAddPolicy
 
 
-SHOW_STACK = "show stack\n"
-SHOW_VLANS = "show vlans\n"
-
-
 class SwitchStack:
 
     def __init__(self, name, ip, username, password, port=22):
@@ -64,7 +60,7 @@ class SwitchStack:
 
     def __pull_switches(self):
         self.switches = {}
-        stack_data = self.__execute(SHOW_STACK)
+        stack_data = self.__execute("show stack")
         recording = False
         for line in stack_data.splitlines():
             if not recording:
@@ -86,7 +82,7 @@ class SwitchStack:
 
     def __pull_vlans(self):
         # Gather our vlan data
-        vlan_data = self.__execute(SHOW_VLANS)
+        vlan_data = self.__execute("show vlans")
         while vlan_data.endswith("next page: Space, next line: Return key, quit: Control-c"):
             vlan_data += '\n' + self.__execute(' ')
 
@@ -131,7 +127,7 @@ class SwitchStack:
     # User methods
     ######################################################################
 
-    def print_switches(self):
+    def print_stack(self):
         if not self.switches:
             self.__pull_data()
 

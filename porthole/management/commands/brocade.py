@@ -22,21 +22,21 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--show_vlans',
+            '--print_stacks',
             action='store_true',
-            dest='show_vlans',
+            dest='print_stacks',
             help='Show the VLAN data from all switch stacks',
         )
 
     def handle(self, *args, **options):
-        if options['show_vlans']:
-            self.show_vlans()
+        if options['print_stacks']:
+            self.print_stacks()
 
-    def show_vlans(self):
+    def print_stacks(self):
         farnet = Fernet(bytes(settings.BROCADE_KEY, encoding='utf-8'))
         username = farnet.decrypt(bytes(settings.BROCADE_USER, encoding='utf-8'))
         password = farnet.decrypt(bytes(settings.BROCADE_PASS, encoding='utf-8'))
         for name,ip in settings.BROCADE_SWITCHES:
             stack = SwitchStack(name, ip, username, password)
-            stack.print_switches()
+            stack.print_stack()
             print()
