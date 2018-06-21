@@ -7,14 +7,6 @@ from porthole.models import Location, Switch, VLAN, Port
 from porthole.brocade import SwitchStack
 
 
-def get_auth():
-    farnet = Fernet(bytes(settings.BROCADE_KEY, encoding='utf-8'))
-    return (
-        farnet.decrypt(bytes(settings.BROCADE_USER, encoding='utf-8')).decode(encoding='utf-8'),
-        farnet.decrypt(bytes(settings.BROCADE_PASS, encoding='utf-8')).decode(encoding='utf-8'),
-    )
-
-
 class Command(BaseCommand):
     help = "Command the Brocade switch stacks"
     args = ""
@@ -33,10 +25,17 @@ class Command(BaseCommand):
             self.print_stacks()
 
     def print_stacks(self):
-        farnet = Fernet(bytes(settings.BROCADE_KEY, encoding='utf-8'))
-        username = farnet.decrypt(bytes(settings.BROCADE_USER, encoding='utf-8'))
-        password = farnet.decrypt(bytes(settings.BROCADE_PASS, encoding='utf-8'))
+        username = self.decrypt_message(settings.BROCADE_USER)
+        password = self.decrypt_message(settings.BROCADE_PASS)
         for name,ip in settings.BROCADE_SWITCHES:
             stack = SwitchStack(name, ip, username, password)
             stack.print_stack()
             print()
+
+    def encrypt_message(self, message, encoding='utf-8'):
+        farnet = Fernet(bytes(settings.BROCADE_KEY, encoding=encoding))
+        return farnet.encrypt(bytes(message, encoding=encoding))
+
+    def decrypt_message(self, message, encoding='utf-8'):
+        farnet = Fernet(bytes(settings.BROCADE_KEY, encoding=encoding))
+        return farnet.decrypt(bytes(message, encoding=encoding))
