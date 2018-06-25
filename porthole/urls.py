@@ -1,21 +1,16 @@
-"""porthole URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 
+from porthole import views
+
+app_name = 'porthole'
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.home, name='home'),
+    path('locations', views.locations, name='locations'),
+    path('location/<int:location>/', views.location, name='location'),
+    path('switches', views.switches, name='switches'),
+    path('switch/<int:switch>/', views.switch, name='switch'),
+    path('vlans', views.vlans, name='vlans'),
+    path('vlan/<int:vlan>/', views.vlan, name='vlan'),
 ]
