@@ -1,0 +1,22 @@
+{% extends "porthole/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <div class="section">
+    <div class="row center">
+      <h4 class="center">Switches</h4>
+      {% for closet in closets %}
+        <h5>{{ closet }}</h5>
+        <ul>
+        {% for switch in closet.switch_set.all %}
+          <li>
+            <a href="{% url 'switch' switch.label %}">{{ switch }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

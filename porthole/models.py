@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 
 
 class Location(models.Model):
@@ -9,6 +10,12 @@ class Location(models.Model):
 
     def __str__(self):
         return "%s: %s" % (self.number, self.name)
+
+    def get_absolute_url(self):
+        return reverse('location', kwargs={'location': self.number})
+
+    def get_admin_url(self):
+        return reverse('admin:porthole_location_change', args=[self.id])
 
     class Meta:
         ordering = ['number',]
@@ -24,6 +31,12 @@ class Switch(models.Model):
     def __str__(self):
         return self.label
 
+    def get_absolute_url(self):
+        return reverse('switch', kwargs={'switch': self.label})
+
+    def get_admin_url(self):
+        return reverse('admin:porthole_switch_change', args=[self.id])
+
     class Meta:
         ordering = ['label',]
 
@@ -37,6 +50,12 @@ class VLAN(models.Model):
     def __str__(self):
         return "%s: %s" % (self.tag, self.name)
 
+    def get_absolute_url(self):
+        return reverse('vlan', kwargs={'vlan': self.tag})
+
+    def get_admin_url(self):
+        return reverse('admin:porthole_vlan_change', args=[self.id])
+    
     class Meta:
         ordering = ['tag',]
 
@@ -51,6 +70,12 @@ class Port(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.closet.number, self.label)
+
+    # def get_absolute_url(self):
+    #     return reverse('member:receipt', kwargs={'bill_id': self.id})
+
+    def get_admin_url(self):
+        return reverse('admin:porthole_port_change', args=[self.id])
 
     class Meta:
         ordering = ['closet__number', 'label']

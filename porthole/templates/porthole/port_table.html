@@ -1,0 +1,41 @@
+<table class="highlight centered">
+  <thead>
+    <tr>
+      <th>Label</th>
+      <th>Location</th>
+      <th>Switch</th>
+      <th>VLAN</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for port in ports %}
+      <tr>
+        <td>{{ port.label }}</td>
+        <td>
+          <a href="{% url 'location' port.location.number %}">
+            {{ port.location }}
+          </a>
+        </td>
+        <td>
+          {% if port.switch %}
+            {{ port.closet.number }}
+            <a href="{% url 'switch' port.switch.label %}">
+              {{ port.switch }}
+            </a>
+            #{{ port.switch_port }}
+          {% endif %}
+        <td>
+          <a href="{% url 'vlan' port.vlan.tag %}">
+            {{ port.vlan }}
+          </a>
+        </td>
+        <td>
+          <a href="{{ port.get_admin_url }}">
+            <i class="material-icons">edit</i>
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

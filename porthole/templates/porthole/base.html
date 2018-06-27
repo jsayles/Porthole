@@ -29,20 +29,25 @@
   </head>
 
   <body>
-    <nav class="blue"  role="navigation">
-      <div class="nav-wrapper container">
-        <a id="logo-container" href="/" class="brand-logo">Porthole - Network Manager</a>
-        <ul class="right hide-on-med-and-down">
-          <li><a href="{% url 'locations' %}">Locations</a></li>
-          <li><a href="{% url 'switches' %}">Switches</a></li>
-          <li><a href="{% url 'vlans' %}">VLANs</a></li>
-        </ul>
-      </div>
-    </nav>
+    <header>
+      <nav class="blue"  role="navigation">
+        <div class="nav-wrapper container">
+          <a id="logo-container" href="/" class="brand-logo">Porthole - Network Manager</a>
+          <ul class="right hide-on-med-and-down">
+            <li><a href="{% url 'locations' %}">Locations</a></li>
+            <li><a href="{% url 'switches' %}">Switches</a></li>
+            <li><a href="{% url 'vlans' %}">VLANs</a></li>
+            <li><a href="{% url 'admin:index' %}">Admin</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
 
-    <div id="content">
-      {% block content %}{% endblock %}
-    </div>
+    <main>
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
 
     <footer class="page-footer orange">
       <div class="container">

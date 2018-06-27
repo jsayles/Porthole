@@ -7,10 +7,10 @@ app_name = 'porthole'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('locations', views.locations, name='locations'),
-    path('location/<int:location>/', views.location, name='location'),
-    path('switches', views.switches, name='switches'),
-    path('switch/<int:switch>/', views.switch, name='switch'),
-    path('vlans', views.vlans, name='vlans'),
-    path('vlan/<int:vlan>/', views.vlan, name='vlan'),
+    path('locations', views.location_list, name='locations'),
+    path('location/<str:location>/', views.location_view, name='location'),
+    path('switches', views.switch_list, name='switches'),
+    path('switch/<str:switch>/', views.switch_view, name='switch'),
+    path('vlans', views.vlan_list, name='vlans'),
+    path('vlan/<str:vlan>/', views.vlan_view, name='vlan'),
 ]
