@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, render
@@ -65,3 +64,50 @@ def vlan_view(request, vlan):
         'ports': ports,
     }
     return render(request, 'porthole/vlan_view.html', context)
+
+def split_label(label):
+    alphas = ""
+    digits = ""
+    for c in label:
+        if c.isalpha():
+            alphas += c
+        elif c.isdigit():
+            digits += c
+    return (alphas, digits)
+
+def search(request):
+    closets = Location.objects.annotate(Count('switch')).filter(switch__count__gt=0).order_by('number')
+    ports = None
+    closet_number = None
+    port_label = None
+    if request.POST:
+        try:
+            if 'closet_number' in request.POST:
+                closet_number = request.POST['closet_number']
+                closet = Location.objects.filter(number=closet_number).first()
+                ports = Port.objects.filter(closet=closet)
+            else:
+                ports = Port.objects.all()
+
+            if 'port_label' in request.POST:
+                port_label = request.POST['port_label']
+                alphas = ""
+                digits = ""
+                for c in port_label:
+                    if c.isalpha():
+                        alphas += c
+                    elif c.isdigit():
+                        digits += c
+                if alphas:
+                    ports = ports.filter(label__istartswith=alphas)
+                if digits:
+                    ports = ports.filter(label__contains=digits)
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, f"Error performing search: {e} ")
+    context = {
+        'closets': closets,
+        'ports': ports,
+        'q_closet': closet_number,
+        'q_label': port_label,
+    }
+    return render(request, 'porthole/search.html', context)

@@ -27,3 +27,8 @@ main {
 .icon-block .material-icons {
   font-size: inherit;
 }
+
+.error {
+  color: red;
+	font-style: italic;
+}

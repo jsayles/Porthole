@@ -32,11 +32,16 @@
     <header>
       <nav class="blue"  role="navigation">
         <div class="nav-wrapper container">
-          <a id="logo-container" href="/" class="brand-logo">Porthole - Network Manager</a>
+          <a id="logo-container" href="/" class="brand-logo">
+            <i class="material-icons">gps_fixed</i> Porthole - Network Manager
+          </a>
           <ul class="right hide-on-med-and-down">
             <li><a href="{% url 'locations' %}">Locations</a></li>
             <li><a href="{% url 'switches' %}">Switches</a></li>
             <li><a href="{% url 'vlans' %}">VLANs</a></li>
+            <li>
+              <a href="{% url 'search' %}"><i class="material-icons">search</i></a>
+            </li>
             <li><a href="{% url 'admin:index' %}">Admin</a></li>
           </ul>
         </div>
@@ -49,20 +54,20 @@
       </div>
     </main>
 
-    <footer class="page-footer orange">
+    <footer class="page-footer orange center">
       <div class="container">
         Writen by Iman Khan and Jacob Sayles for
         <a class="orange-text text-lighten-4" href="https://312main.ca">312 Main</a> |
-        Source found on <a class="orange-text text-lighten-4" href="https://github.com/jsayles/porthole/">GitHub</a> |
+        Source for this application can be found on <a class="orange-text text-lighten-4" href="https://github.com/jsayles/porthole/">GitHub</a> |
         Template by <a class="orange-text text-lighten-4" href="http://materializecss.com">Materialize</a>
       </div>
     </footer>
 
-  <!--  Scripts-->
-  <script type="text/javascript" src="{% static 'js/materialize.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/init.js' %}"></script>
-  {% block extrajs %}{% endblock %}
-
+    <!--  Scripts-->
+    <script type="text/javascript" src="{% static 'js/materialize.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/init.js' %}"></script>
+    {% block extrajs %}{% endblock %}
+  
   </body>
 </html>

@@ -13,4 +13,5 @@ urlpatterns = [
     path('switch/<str:switch>/', views.switch_view, name='switch'),
     path('vlans', views.vlan_list, name='vlans'),
     path('vlan/<str:vlan>/', views.vlan_view, name='vlan'),
+    path('search', views.search, name='search'),
 ]
