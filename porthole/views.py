@@ -78,6 +78,13 @@ def search(request):
     }
     return render(request, 'porthole/search.html', context)
 
+def port_view(request, port_id):
+    port = get_object_or_404(Port, id=port_id)
+    context = {
+        'port': port,
+    }
+    return render(request, 'porthole/port_view.html', context)
+
 #########################################################################
 # Location Views
 #########################################################################
@@ -95,13 +102,12 @@ def location_list(request):
 
 def location_view(request, location):
     location = get_object_or_404(Location, number=location)
-    ports = location.port_set.all().order_by('switch')
     order_by = request.GET.get('order_by', 's')
-    ports = sort_ports(ports, order_by)
+    ports = sort_ports(location.port_set.all(), order_by)
     context = {
         'location': location,
-        'ports': ports,
         'order_by': order_by,
+        'ports': ports,
     }
     return render(request, 'porthole/location_view.html', context)
 
@@ -119,13 +125,12 @@ def switch_list(request):
 
 def switch_view(request, stack, unit):
     switch = get_object_or_404(Switch, stack__name=stack, unit=unit)
-    ports = switch.port_set.all()
     order_by = request.GET.get('order_by', 's')
-    ports = sort_ports(ports, order_by)
+    ports = sort_ports(switch.port_set.all(), order_by)
     context = {
         'switch': switch,
-        'ports': ports,
         'order_by': order_by,
+        'ports': ports,
     }
     return render(request, 'porthole/switch_view.html', context)
 
@@ -142,12 +147,11 @@ def vlan_list(request):
 
 def vlan_view(request, vlan):
     vlan = get_object_or_404(VLAN, tag=vlan)
-    ports = vlan.port_set.all()
     order_by = request.GET.get('order_by', 's')
-    ports = sort_ports(ports, order_by)
+    ports = sort_ports(vlan.port_set.all(), order_by)
     context = {
         'vlan': vlan,
-        'ports': ports,
         'order_by': order_by,
+        'ports': ports,
     }
     return render(request, 'porthole/vlan_view.html', context)

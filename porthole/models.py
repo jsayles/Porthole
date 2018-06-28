@@ -116,8 +116,8 @@ class Port(models.Model):
     def __str__(self):
         return "%s %s" % (self.closet.number, self.label)
 
-    # def get_absolute_url(self):
-    #     return reverse('member:receipt', kwargs={'bill_id': self.id})
+    def get_absolute_url(self):
+        return reverse('port', kwargs={'port_id': self.id})
 
     def get_admin_url(self):
         return reverse('admin:porthole_port_change', args=[self.id])

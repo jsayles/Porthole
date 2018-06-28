@@ -11,7 +11,11 @@
   <tbody>
     {% for port in ports %}
       <tr>
-        <td>{{ port.label }}</td>
+        <td>
+          <a href="{% url 'port' port.id %}">
+            {{ port.label }}
+          </a>
+        </td>
         <td>
           <a href="{% url 'location' port.location.number %}">
             {{ port.location }}
