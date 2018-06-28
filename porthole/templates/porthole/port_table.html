@@ -1,10 +1,10 @@
 <table class="highlight centered">
   <thead>
     <tr>
-      <th>Label</th>
-      <th>Location</th>
-      <th>Switch</th>
-      <th>VLAN</th>
+      <th><a class="black-text" href="?order_by=p{% if order_by == 'p' %}-{% endif %}">Port</a></th>
+      <th><a class="black-text" href="?order_by=l{% if order_by == 'l' %}-{% endif %}">Location</a></th>
+      <th><a class="black-text" href="?order_by=s{% if order_by == 's' %}-{% endif %}">Switch</a></th>
+      <th><a class="black-text" href="?order_by=v{% if order_by == 'v' %}-{% endif %}">VLAN</a></th>
       <th></th>
     </tr>
   </thead>
@@ -19,11 +19,11 @@
         </td>
         <td>
           {% if port.switch %}
-            {{ port.closet.number }}
             <a href="{{ port.switch.get_absolute_url }}">
+              {{ port.closet.number }}
               {{ port.switch }}
+              #{{ port.switch_port }}
             </a>
-            #{{ port.switch_port }}
           {% endif %}
         <td>
           <a href="{% url 'vlan' port.vlan.tag %}">
