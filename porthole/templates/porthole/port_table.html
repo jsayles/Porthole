@@ -20,7 +20,7 @@
         <td>
           {% if port.switch %}
             {{ port.closet.number }}
-            <a href="{% url 'switch' port.switch.label %}">
+            <a href="{{ port.switch.get_absolute_url }}">
               {{ port.switch }}
             </a>
             #{{ port.switch_port }}

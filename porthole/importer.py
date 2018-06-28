@@ -3,7 +3,7 @@ from openpyxl import Workbook, load_workbook
 from django.conf import settings
 from django.utils.timezone import localtime, now
 
-from porthole.models import Location, Switch, VLAN, Port
+from porthole.models import Location, SwitchStack, Switch, VLAN, Port
 
 
 LOCATIONS = "Locations"
@@ -85,14 +85,24 @@ class Importer(object):
         sheet = self.workbook[SWITCHES]
         switches = sheet_to_dict(sheet)
         for row in switches:
-            label = row['label']
-            switch = Switch.objects.filter(label=label).first()
-            if not switch:
-                self.switches_added = self.switches_added + 1
+            stack_name = row['stack']
+            stack = SwitchStack.objects.filter(name=stack_name).first()
+            if not stack:
                 location = Location.objects.filter(number=row['location']).first()
                 if not location:
                     raise Exception("Location '%s' not found!" % row['location'])
-                switch = Switch(label=label, location=location)
+                stack = SwitchStack(name=stack_name, location=location)
+                stack.ip_address = row['ip_address']
+                stack.username = row['username']
+                stack.password = row['password']
+                stack.port = row['port']
+                stack.save()
+
+            unit = row['unit']
+            switch = Switch.objects.filter(stack=stack, unit=unit).first()
+            if not switch:
+                self.switches_added = self.switches_added + 1
+                switch = Switch(stack=stack, unit=unit)
             else:
                 self.switches_updated = self.switches_updated + 1
             switch.make = row['make']
@@ -140,7 +150,10 @@ class Importer(object):
                 raise Exception("VLAN '%s' not found!" % row['vlan'])
 
             # Find the switch
-            switch = Switch.objects.filter(label=row['switch']).first()
+            switch = None
+            if row['switch']:
+                switch_name, unit = row['switch'].split('-')
+                switch = Switch.objects.filter(stack__name=switch_name, unit=unit).first()
 
             # We may have 1 or 2 labels on a single line
             # NOTE:  This won't work if there is no space in the label name
@@ -191,7 +204,7 @@ class Exporter(object):
         self.locations.title = LOCATIONS
         self.locations.append(['number', 'name'])
         self.switches = self.workbook.create_sheet(title=SWITCHES)
-        self.switches.append(['label', 'location', 'make', 'model', 'port_count'])
+        self.switches.append(['stack', 'unit', 'location', 'make', 'model', 'port_count', 'ip_address', 'username', 'password', 'port'])
         self.vlans = self.workbook.create_sheet(title=VLANS)
         self.vlans.append(['tag', 'name', 'description', 'ip_range'])
         self.ports = self.workbook.create_sheet(title=PORTS)
@@ -201,7 +214,7 @@ class Exporter(object):
         for l in Location.objects.all():
             self.locations.append([l.number, l.name])
         for s in Switch.objects.all():
-            self.switches.append([s.label, s.location.number, s.make, s.model, s.port_count])
+            self.switches.append([s.stack.name, s.unit, s.stack.location.number, s.make, s.model, s.port_count, s.stack.ip_address, s.stack.username, s.stack.password, s.stack.port])
         for v in VLAN.objects.all():
             self.vlans.append([v.tag, v.name, v.description, v.ip_range])
         for p in Port.objects.all():

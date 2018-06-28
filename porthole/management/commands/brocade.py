@@ -1,10 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
-from cryptography.fernet import Fernet
-
-from porthole.models import Location, Switch, VLAN, Port
-from porthole.brocade import SwitchStack
+from porthole import models, brocade
 
 
 class Command(BaseCommand):
@@ -25,17 +22,7 @@ class Command(BaseCommand):
             self.print_stacks()
 
     def print_stacks(self):
-        username = self.decrypt_message(settings.BROCADE_USER)
-        password = self.decrypt_message(settings.BROCADE_PASS)
-        for name,ip in settings.BROCADE_SWITCHES:
-            stack = SwitchStack(name, ip, username, password)
+        for s in models.SwitchStack.objects.all():
+            stack = brocade.SwitchStack(s.name, s.ip_address, s.raw_username, s.raw_password, port=s.port)
             stack.print_stack()
             print()
-
-    def encrypt_message(self, message, encoding='utf-8'):
-        farnet = Fernet(bytes(settings.BROCADE_KEY, encoding=encoding))
-        return farnet.encrypt(bytes(message, encoding=encoding))
-
-    def decrypt_message(self, message, encoding='utf-8'):
-        farnet = Fernet(bytes(settings.BROCADE_KEY, encoding=encoding))
-        return farnet.decrypt(bytes(message, encoding=encoding))

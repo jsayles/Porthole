@@ -3,9 +3,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, render
-from django.db.models import Count
 
-from porthole.models import Location, Port, Switch, VLAN
+from porthole.models import Location, SwitchStack, Switch, VLAN, Port
 
 
 def home(request):
@@ -34,14 +33,14 @@ def location_view(request, location):
 
 def switch_list(request):
     # A data closet is a location with switches in it
-    closets = Location.objects.annotate(Count('switch')).filter(switch__count__gt=0).order_by('number')
+    closets = Location.objects.data_closets()
     context = {
         'closets': closets
     }
     return render(request, 'porthole/switch_list.html', context)
 
-def switch_view(request, switch):
-    switch = get_object_or_404(Switch, label=switch)
+def switch_view(request, stack, unit):
+    switch = get_object_or_404(Switch, stack__name=stack, unit=unit)
     ports = switch.port_set.all()
     context = {
         'switch': switch,
@@ -76,7 +75,7 @@ def split_label(label):
     return (alphas, digits)
 
 def search(request):
-    closets = Location.objects.annotate(Count('switch')).filter(switch__count__gt=0).order_by('number')
+    closets = Location.objects.data_closets()
     ports = None
     closet_number = None
     port_label = None
