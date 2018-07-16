@@ -36,9 +36,14 @@
               <a href="{{ port.switch.get_absolute_url }}">
                 {{ port.switch }} #{{ port.switch_port }}
               </a>
-              ({{ port.brocade_str }})
             </td>
           </tr>
+          <th>Module:</th>
+          <td>
+            {{ port.module_id }}
+          </td>
+        </tr>
+
           <tr>
             <th>VLAN:</th>
             <td>
