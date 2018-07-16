@@ -116,6 +116,11 @@ class Port(models.Model):
     def __str__(self):
         return "%s %s" % (self.closet.number, self.label)
 
+    def module_str(self):
+        # STACKID/SLOT/PORT
+        # SLOT = 1 = Ethernet
+        return "%d/1/%d" % (self.switch.unit, self.switch_port)
+
     def get_absolute_url(self):
         return reverse('port', kwargs={'port_id': self.id})
 
