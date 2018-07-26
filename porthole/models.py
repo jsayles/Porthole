@@ -6,6 +6,13 @@ from django.db.models import Count
 from cryptography.fernet import Fernet
 
 
+class Organization(models.Model):
+    name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.name
+
+
 class LocationManager(models.Manager):
 
     def data_closets(self):
@@ -18,6 +25,7 @@ class Location(models.Model):
     number = models.CharField(max_length=5, unique=True)
     name = models.CharField(max_length=64)
     floor = models.SmallIntegerField()
+    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s: %s" % (self.number, self.name)
@@ -129,3 +137,12 @@ class Port(models.Model):
 
     class Meta:
         ordering = ['closet__number', 'label']
+
+
+class WifiNetwork(models.Model):
+    ssid = models.CharField(max_length=64)
+    password = models.CharField(max_length=64)
+    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s (%s)" % (self.ssid, self.vlan)
