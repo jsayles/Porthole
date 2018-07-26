@@ -144,6 +144,7 @@ class WifiNetwork(models.Model):
     ssid = models.CharField(max_length=64)
     password = models.CharField(max_length=64)
     organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.CASCADE)
+    vlan = models.ForeignKey(VLAN, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s (%s)" % (self.ssid, self.vlan)
