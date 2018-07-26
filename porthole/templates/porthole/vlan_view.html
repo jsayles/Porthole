@@ -12,6 +12,9 @@
         </a>
       </h4>
       <h6>
+        {% if vlan.organization %}
+          <b>Org:</b> {{ vlan.organization }}
+        {% endif %}
         <b>Description:</b>  {{ vlan.description }}
         <b>Range:</b>  {{ vlan.ip_range }}
         <b>Ports:</b> {{ ports | length }}

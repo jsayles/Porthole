@@ -99,6 +99,7 @@ class VLAN(models.Model):
     name = models.CharField(max_length=16)
     description = models.CharField(max_length=64, null=True, blank=True)
     ip_range = models.CharField(max_length=32, null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s: %s" % (self.tag, self.name)

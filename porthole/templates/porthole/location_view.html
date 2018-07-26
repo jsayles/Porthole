@@ -12,6 +12,9 @@
         </a>
       </h4>
       <h6>
+        {% if location.organization %}
+          <b>Org:</b> {{ location.organization }}
+        {% endif %}
         <b>Floor:</b> {{ location.floor }}
         <b>Ports:</b> {{ ports.count }}
       </h6>
