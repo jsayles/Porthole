@@ -14,5 +14,8 @@ urlpatterns = [
     path('switch/<str:stack>/<int:unit>/', views.switch_view, name='switch'),
     path('vlans/', views.vlan_list, name='vlans'),
     path('vlan/<str:vlan>/', views.vlan_view, name='vlan'),
+    path('orgs/', views.org_list, name='orgs'),
+    path('org/<int:org_id>/', views.org_view, name='org'),
+    path('print/org/<int:org_id>/', views.org_print, name='org_print'),
     path('admin/', admin.site.urls),
 ]

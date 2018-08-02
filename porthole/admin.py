@@ -6,7 +6,6 @@ admin.site.register(models.Location)
 admin.site.register(models.SwitchStack)
 admin.site.register(models.Switch)
 admin.site.register(models.VLAN)
-admin.site.register(models.WifiNetwork)
 admin.site.register(models.Organization)
 
 class PortAdmin(admin.ModelAdmin):

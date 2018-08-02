@@ -6,11 +6,47 @@ from django.db.models import Count
 from cryptography.fernet import Fernet
 
 
+class VLAN(models.Model):
+    tag = models.CharField(max_length=4, unique=True)
+    name = models.CharField(max_length=16)
+    description = models.CharField(max_length=64, null=True, blank=True)
+    ip_range = models.CharField(max_length=32, null=True, blank=True)
+    gateway = models.CharField(max_length=64, null=True, blank=True)
+    dns = models.CharField(max_length=64, null=True, blank=True)
+    netmask = models.CharField(max_length=64, null=True, blank=True)
+    dhcp_range = models.CharField(max_length=64, null=True, blank=True)
+
+    def __str__(self):
+        return "%s: %s" % (self.tag, self.name)
+
+    def get_absolute_url(self):
+        return reverse('vlan', kwargs={'vlan': self.tag})
+
+    def get_admin_url(self):
+        return reverse('admin:porthole_vlan_change', args=[self.id])
+
+    class Meta:
+        ordering = ['tag',]
+
+
 class Organization(models.Model):
     name = models.CharField(max_length=128)
+    wifi_network = models.CharField(max_length=64, null=True, blank=True)
+    wifi_password = models.CharField(max_length=64, null=True, blank=True)
+    vlan = models.ForeignKey(VLAN, null=True, blank=True, on_delete=models.CASCADE)
+
+    def ports(self):
+        if self.vlan:
+            return self.vlan.port_set.all()
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('org', kwargs={'org_id': self.id})
+
+    def get_admin_url(self):
+        return reverse('admin:porthole_organization_change', args=[self.id])
 
 
 class LocationManager(models.Manager):
@@ -94,26 +130,6 @@ class Switch(models.Model):
         ordering = ['stack', 'unit']
 
 
-class VLAN(models.Model):
-    tag = models.CharField(max_length=4, unique=True)
-    name = models.CharField(max_length=16)
-    description = models.CharField(max_length=64, null=True, blank=True)
-    ip_range = models.CharField(max_length=32, null=True, blank=True)
-    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s: %s" % (self.tag, self.name)
-
-    def get_absolute_url(self):
-        return reverse('vlan', kwargs={'vlan': self.tag})
-
-    def get_admin_url(self):
-        return reverse('admin:porthole_vlan_change', args=[self.id])
-
-    class Meta:
-        ordering = ['tag',]
-
-
 class Port(models.Model):
     label = models.CharField(max_length=4)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -138,13 +154,3 @@ class Port(models.Model):
 
     class Meta:
         ordering = ['closet__number', 'label']
-
-
-class WifiNetwork(models.Model):
-    ssid = models.CharField(max_length=64)
-    password = models.CharField(max_length=64)
-    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.CASCADE)
-    vlan = models.ForeignKey(VLAN, null=True, blank=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s (%s)" % (self.ssid, self.vlan)

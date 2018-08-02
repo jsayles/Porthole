@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, render
 
-from porthole.models import Location, SwitchStack, Switch, VLAN, Port
+from porthole.models import Organization, Location, SwitchStack, Switch, VLAN, Port
 
 
 #########################################################################
@@ -155,3 +155,32 @@ def vlan_view(request, vlan):
         'ports': ports,
     }
     return render(request, 'porthole/vlan_view.html', context)
+
+#########################################################################
+# Org Views
+#########################################################################
+
+def org_list(request):
+    orgs = Organization.objects.all().order_by('name')
+    context = {
+        'orgs': orgs,
+    }
+    return render(request, 'porthole/org_list.html', context)
+
+
+def org_view(request, org_id):
+    org = get_object_or_404(Organization, id=org_id)
+    ports = org.ports()
+    context = {
+        'org': org,
+        'ports': ports,
+    }
+    return render(request, 'porthole/org_view.html', context)
+
+def org_print(request, org_id):
+    org = get_object_or_404(Organization, id=org_id)
+    context = {
+        'org': org,
+        'vlan': org.vlan,
+    }
+    return render(request, 'porthole/org_print.html', context)
