@@ -44,6 +44,7 @@ def home(request):
     context = {}
     return render(request, 'porthole/home.html', context)
 
+@staff_member_required
 def search(request):
     closets = Location.objects.data_closets()
     ports = None
@@ -78,6 +79,7 @@ def search(request):
     }
     return render(request, 'porthole/search.html', context)
 
+@staff_member_required
 def port_view(request, port_id):
     port = get_object_or_404(Port, id=port_id)
     context = {
@@ -89,6 +91,7 @@ def port_view(request, port_id):
 # Location Views
 #########################################################################
 
+@staff_member_required
 def location_list(request):
     locations = (
         (0, Location.objects.filter(floor=0)),
@@ -100,6 +103,7 @@ def location_list(request):
     }
     return render(request, 'porthole/location_list.html', context)
 
+@staff_member_required
 def location_view(request, location):
     location = get_object_or_404(Location, number=location)
     order_by = request.GET.get('order_by', 's')
@@ -115,6 +119,7 @@ def location_view(request, location):
 # Switch Views
 #########################################################################
 
+@staff_member_required
 def switch_list(request):
     # A data closet is a location with switches in it
     closets = Location.objects.data_closets()
@@ -123,6 +128,7 @@ def switch_list(request):
     }
     return render(request, 'porthole/switch_list.html', context)
 
+@staff_member_required
 def switch_view(request, stack, unit):
     switch = get_object_or_404(Switch, stack__name=stack, unit=unit)
     order_by = request.GET.get('order_by', 's')
@@ -138,6 +144,7 @@ def switch_view(request, stack, unit):
 # VLAN Views
 #########################################################################
 
+@staff_member_required
 def vlan_list(request):
     vlans = VLAN.objects.all().order_by('tag')
     context = {
@@ -145,6 +152,7 @@ def vlan_list(request):
     }
     return render(request, 'porthole/vlan_list.html', context)
 
+@staff_member_required
 def vlan_view(request, vlan):
     vlan = get_object_or_404(VLAN, tag=vlan)
     order_by = request.GET.get('order_by', 's')
@@ -160,6 +168,7 @@ def vlan_view(request, vlan):
 # Org Views
 #########################################################################
 
+@staff_member_required
 def org_list(request):
     orgs = Organization.objects.all().order_by('name')
     context = {
@@ -168,6 +177,7 @@ def org_list(request):
     return render(request, 'porthole/org_list.html', context)
 
 
+@staff_member_required
 def org_view(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     ports = org.ports()
@@ -176,7 +186,8 @@ def org_view(request, org_id):
         'ports': ports,
     }
     return render(request, 'porthole/org_view.html', context)
-
+    
+@staff_member_required
 def org_print(request, org_id):
     org = get_object_or_404(Organization, id=org_id)
     context = {
